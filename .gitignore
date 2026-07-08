@@ -1,6 +1,10 @@
 node_modules/
 package-lock.json
 .DS_Store
+/dist
 /pkg
 /pkg.tgz
-.yarn/install-state.gz
+*.tgz
+.yarn/*
+!.yarn/patches
+!.yarn/releases
