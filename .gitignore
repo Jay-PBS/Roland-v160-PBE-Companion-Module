@@ -4,7 +4,6 @@ package-lock.json
 /dist
 /pkg
 /pkg.tgz
-*.tgz
 .yarn/*
 !.yarn/patches
 !.yarn/releases
