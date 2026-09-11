@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.1 — Documentation and formatting
+
+No functional change. No command byte changed — `src/` is untouched.
+
+- Repository folder renamed to `Roland-v160-PBE-Companion-Module`, matching the
+  module id and the GitHub repository name.
+- README now says the fork is not distributed through the **Bitfocus module
+  library** rather than "marketplace", which is the current name for it.
+- Every Markdown, YAML and JSON file in the repository run through Prettier, so
+  `yarn prettier --check .` is clean alongside `yarn build` and `yarn lint`.
+  Cosmetic only: emphasis style, blank lines around fenced blocks, and code
+  samples inside the docs wrapped the way Prettier wraps them.
+
 ## 1.1.0 — Correctness review & transport hardening
 
 A review pass over the 1.0.0 conversion, checking every feedback, variable,
@@ -13,7 +26,7 @@ hardware-derived evidence for most of them.
 No command byte changed. Every action callback was executed against a recording
 stub before and after the work and the emitted bytes compared: **all 76
 identical**, and `calculateBytes` identical across its range. The one deliberate
-change to *traffic* is the polling cadence described under "Polling load" below —
+change to _traffic_ is the polling cadence described under "Polling load" below —
 the per-cycle command set is otherwise byte-identical and in the same order.
 
 ### Fixed — verified by reading the code and by test
@@ -103,9 +116,9 @@ change in this release that a hardware test could contradict.
   `000010` for the same state. Both are inherited from the original, and the
   original's feedback compared `000010` against a dropdown emitting `000110`, so
   USB feedback never matched there. The feedback now accepts both, but which
-  address the *action* should write is unresolved and wire-affecting. Unchanged.
+  address the _action_ should write is unresolved and wire-affecting. Unchanged.
 - **Tally channel coverage.** `TALLY_INPUTS` maps 42 channels, ending at XPT
-  1-10, inherited from the original. Roland's *Basic Control Commands* document
+  1-10, inherited from the original. Roland's _Basic Control Commands_ document
   lists 52 channels with INPUT 1-20 for the V-160HD, but that describes a
   different protocol from the `DTH`/`RQH` scheme this module speaks, so it is not
   evidence here. If the tally push carries more than 42 entries, the extras are

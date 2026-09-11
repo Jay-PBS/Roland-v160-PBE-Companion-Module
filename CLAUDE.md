@@ -19,7 +19,7 @@ out into a **complete preset library**. Concretely:
 
 **You have wide latitude here.** This is a rewrite/modernization of code we don't
 maintain — restructure aggressively, rename freely, delete dead code, impose a clean
-architecture. This is *not* a careful minimal-diff patch job. The **one** thing you
+architecture. This is _not_ a careful minimal-diff patch job. The **one** thing you
 must preserve (or verify) is **what goes over the wire to the switcher** — that part
 already works, so don't change the bytes the device receives unless you can confirm
 the change on hardware.
@@ -67,6 +67,7 @@ Match the current upstream template `bitfocus/companion-module-template-ts`
 (**2.x, typed-schema generation**). The key shape:
 
 **`src/main.ts` — default-export class + typed schema (no `runEntrypoint`):**
+
 ```ts
 import { InstanceBase, InstanceStatus, type SomeCompanionConfigField } from '@companion-module/base'
 import { GetConfigFields, type ModuleConfig } from './config.js'
@@ -90,17 +91,27 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	async init(config: ModuleConfig): Promise<void> {
 		this.config = config
 		this.updateStatus(InstanceStatus.Connecting)
-		UpdateActions(this); UpdateFeedbacks(this); UpdatePresets(this); UpdateVariableDefinitions(this)
+		UpdateActions(this)
+		UpdateFeedbacks(this)
+		UpdatePresets(this)
+		UpdateVariableDefinitions(this)
 		// open connection to the switcher; set Ok on success, ConnectionFailure on error
 	}
-	async destroy(): Promise<void> { /* close socket, clearInterval every timer */ }
-	async configUpdated(config: ModuleConfig): Promise<void> { this.config = config; /* reconnect */ }
-	getConfigFields(): SomeCompanionConfigField[] { return GetConfigFields() }
+	async destroy(): Promise<void> {
+		/* close socket, clearInterval every timer */
+	}
+	async configUpdated(config: ModuleConfig): Promise<void> {
+		this.config = config /* reconnect */
+	}
+	getConfigFields(): SomeCompanionConfigField[] {
+		return GetConfigFields()
+	}
 }
 ```
 
 **Definition files export a `*Schema` type + an `Update*(self)` function that calls
 `self.setXDefinitions(...)`:**
+
 ```ts
 // actions.ts
 import type ModuleInstance from './main.js'
@@ -110,16 +121,20 @@ export function UpdateActions(self: ModuleInstance): void {
 		set_input: {
 			name: 'Program: Set Input',
 			options: [{ id: 'input', type: 'number', label: 'Input', default: 1, min: 1, max: 16 }],
-			callback: async (event) => { await self.sendToSwitcher(event.options.input) }, // options typed
+			callback: async (event) => {
+				await self.sendToSwitcher(event.options.input)
+			}, // options typed
 		},
 	})
 }
 ```
+
 Feedbacks (`UpdateFeedbacks` -> `setFeedbackDefinitions`), variables
 (`UpdateVariableDefinitions` -> `setVariableDefinitions`), config (`GetConfigFields`),
 and upgrades (`UpgradeScripts` array) follow the same template shapes.
 
 **Modern toolchain (from the template):**
+
 - **Yarn 4 via Corepack**, `node-modules` linker (`.yarnrc.yml`).
 - `package.json` pins `packageManager: yarn@4.x`, `engines.node ^22`,
   `@companion-module/base` 2.x, `@companion-module/tools` 3.x, ESM (`"type":"module"`).
@@ -128,7 +143,7 @@ and upgrades (`UpgradeScripts` array) follow the same template shapes.
 - **ESLint flat config** wrapping the tools preset:
   `export default generateEslintConfig({ enableTypescript: true })`.
 - `companion/manifest.json` with `runtime: { type: "node22", api: "nodejs-ipc",
-  entrypoint: "../dist/main.js" }`.
+entrypoint: "../dist/main.js" }`.
 
 ---
 
@@ -213,8 +228,8 @@ Turn the full action set into a complete, usable preset library:
 - **Every action gets at least one preset button.** Where an action takes a small
   fixed set of values (input 1..N, bus, transition type), generate **one button per
   value** via loops — not a single parameterised button.
-- **Organize into categories** by function (e.g. *Program*, *Preview*, *Transitions*,
-  *AUX/Outputs*, *Audio*, *Macros/System*). Categories are how users find buttons.
+- **Organize into categories** by function (e.g. _Program_, _Preview_, _Transitions_,
+  _AUX/Outputs_, _Audio_, _Macros/System_). Categories are how users find buttons.
 - **Consistent styling from one place.** Define a small colour palette / role scheme
   once (e.g. program = red, preview = green, transition = amber, system = blue) and
   reuse it — don't scatter raw hex. Keep `size` and `show_topbar` consistent.
@@ -230,8 +245,8 @@ opening the raw action list.
 
 ## Bug-fixing
 
-Fix what you find during the port; for each fix, note *what was wrong* and *what
-changed* (for the README/changelog). Usual suspects in old modules: no reconnect /
+Fix what you find during the port; for each fix, note _what was wrong_ and _what
+changed_ (for the README/changelog). Usual suspects in old modules: no reconnect /
 no status updates, unhandled connection errors, races between polls and commands,
 brittle response parsing, missing timeouts (add `AbortSignal.timeout(...)` or socket
 timeouts), overlapping in-flight polls, off-by-one on input/bus indexing, and hard-
@@ -244,9 +259,9 @@ coded assumptions about model/config.
 - **If a V-160HD (or the switcher) is available:** verify actions actually drive it
   and feedbacks reflect real state. That's the real test.
 - **If not:** make the modernization **behaviour-neutral on the wire** — the ported
-  code must send the device the *same* commands the original did. Confirm this by
+  code must send the device the _same_ commands the original did. Confirm this by
   comparing against the old code, get `build` + `lint` fully clean, and clearly flag
-  anything that *changes* what's sent (new reconnect logic, altered command strings)
+  anything that _changes_ what's sent (new reconnect logic, altered command strings)
   as needing human/hardware verification before release.
 
 ---

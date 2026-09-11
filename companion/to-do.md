@@ -6,16 +6,13 @@ Status as of 2026-09-11.
 
 - [x] **Module clashed with the official release, appearing as a version of it.**
       Root cause found: `legacyIds: ["roland-v160hd"]` in the manifest tells
-      Companion this module *is* the renamed official one, so it is presented as a
+      Companion this module _is_ the renamed official one, so it is presented as a
       version of it rather than as a separate module. Now `[]`.
 - [x] **Recreated as Roland V160 PBE**, following the Pixera convention
-      (`pixera-purple-badger` / "Pixera Purple Badger" / "Pixera PBE"):
-      - manifest `id`: `roland-v160-pbe` — note **lowercased** from the hand-edited
-        `roland-v160-PBE`; Companion ids must be lowercase-hyphenated, and the id
-        appears in preset variable references
-      - manifest `name`: `Roland V160 Purple Badger`, `shortname`: `V160 PBE`
-      - `package.json` name and both GitHub URLs realigned to
-        `Roland-v160-PBE-Companion-Module`
+      (`pixera-purple-badger` / "Pixera Purple Badger" / "Pixera PBE"): - manifest `id`: `roland-v160-pbe` — note **lowercased** from the hand-edited
+      `roland-v160-PBE`; Companion ids must be lowercase-hyphenated, and the id
+      appears in preset variable references - manifest `name`: `Roland V160 Purple Badger`, `shortname`: `V160 PBE` - `package.json` name and both GitHub URLs realigned to
+      `Roland-v160-PBE-Companion-Module`
 - [x] **Built the hardware testing list** — `TESTING-NEXT.md`, ordered by risk with
       a connection gate first, plus the open protocol questions.
 - [x] **README updated** with the live-development warning and the
@@ -27,17 +24,12 @@ Status as of 2026-09-11.
 - [x] **Code review rolled in** — see `CODE_REVIEW.md` and the 1.1.0 changelog.
       12 defects fixed, 3 parked as needing hardware, 1 deliberately unchanged.
       Proven byte-neutral on the wire: all 76 action callbacks emit identical bytes.
-- [x] **Idiot-check of the hand edits** — found and fixed:
-      - `src/presets.ts` still hardcoded the **old** module id
-        (`roland-v160v1-pbs`) for preset variable references, so after the manifest
-        rename every memory-name and model/version button would have rendered the
-        raw `$(...)` text instead of a value. It now derives from a single
-        `MODULE_ID` constant tied by comment to the manifest.
-      - manifest `name` was a copy of the `id` rather than a human-readable name
-      - manifest `id` contained uppercase
-      - `package.json` name and repo URLs still pointed at the old repo
-      - `companion/HELP.md` title read "Purple Badger Solution Moderization"
-        (missing s, misspelt modernization)
+- [x] **Idiot-check of the hand edits** — found and fixed: - `src/presets.ts` still hardcoded the **old** module id
+      (`roland-v160v1-pbs`) for preset variable references, so after the manifest
+      rename every memory-name and model/version button would have rendered the
+      raw `$(...)` text instead of a value. It now derives from a single
+      `MODULE_ID` constant tied by comment to the manifest. - manifest `name` was a copy of the `id` rather than a human-readable name - manifest `id` contained uppercase - `package.json` name and repo URLs still pointed at the old repo - `companion/HELP.md` title read "Purple Badger Solution Moderization"
+      (missing s, misspelt modernization)
 - [x] **Built** — `roland-v160-pbe-1.1.0.tgz`. `build`, `lint`, `prettier` and
       `package` all clean.
 
@@ -67,27 +59,33 @@ Status as of 2026-09-11.
       Lockfile regenerated, and `--immutable` is now written out explicitly in the
       workflow so the same drift fails with an obvious message next time.
 
-      Worth remembering: the first attempt at this fix also bumped
-      `actions/checkout` and `actions/setup-node` to v5 and added a
-      permissions/concurrency block, none of which was needed. The run then failed
-      at `setup-node@v5` instead — one failure swapped for another, with the
-      original signal lost. Reverted to v4 and kept only the one-line fix. The
-      Node 20 notice is a warning, not an error, and GitHub already force-runs
-      those actions on Node 24.
+  - Worth remembering: the first attempt at this fix also bumped
+    `actions/checkout` and `actions/setup-node` to v5 and added a
+    permissions/concurrency block, none of which was needed. The run then failed
+    at `setup-node@v5` instead — one failure swapped for another, with the
+    original signal lost. Reverted to v4 and kept only the one-line fix. The
+    Node 20 notice is a warning, not an error, and GitHub already force-runs
+    those actions on Node 24.
+
+- [x] **Windows folder renamed** — the working copy now lives at
+      `D:\GITHUB\Roland-v160-PBE-Companion-Module`, matching the module id and
+      the GitHub repo name. Nothing tracked referred to the old path, so git,
+      the build and CI were unaffected. The one side effect was handled: Claude
+      Code keys its per-project memory off the folder path, and the memory
+      (fork decisions, the id/MODULE_ID rule, the no-hardware constraint) was
+      carried across to `~/.claude/projects/d--GITHUB-Roland-v160-PBE-Companion-Module/`.
+      The old slug still holds a copy plus that session's transcript and can be
+      deleted.
 - [x] **Stale identity swept** — `README.md`, `CODE_REVIEW.md` and `CLAUDE.md`
       still carried the old "Roland v160v1 - PBS" name in their titles. Fixed. The
       remaining mentions of the old name in this file are deliberate history.
 
-## Open — needs your call
+- [x] **Packaged builds are committed** — the module is not distributed
+      anywhere else, so the `.tgz` from `yarn package` lives in the repo root.
+      Retention is the three most recent versions; delete the oldest when a
+      fourth is added.
 
-- [ ] **Renaming the Windows folder.** The repo itself is path-independent —
-      nothing tracked refers to `D:\GITHUB\Roland v160v1 - PBS`, so git, the
-      build and CI are all unaffected. One side effect to know about: Claude
-      Code keys its per-project memory off the folder path, so
-      `~/.claude/projects/d--GITHUB-Roland-v160v1---PBS/` would no longer be
-      found and the project memory (fork decisions, the id/MODULE_ID rule, the
-      no-hardware constraint) would silently stop loading. Copy that folder to
-      the slug for the new path to keep it.
+## Open — needs your call
 
 - [ ] **Make the repo public** — Settings → General → Danger Zone → Change
       visibility. Not scriptable from this machine: the `gh` CLI is not installed.

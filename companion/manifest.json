@@ -4,7 +4,7 @@
 	"name": "Roland v160 : Purple Badger Edition",
 	"shortname": "V160_PBE",
 	"description": "Control a Roland V-160HD video switcher (Purple Badger Solutions modernization fork)",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"license": "MIT",
 	"repository": "git+https://github.com/Jay-PBS/Roland-v160-PBE-Companion-Module.git",
 	"bugs": "https://github.com/Jay-PBS/Roland-v160-PBE-Companion-Module/issues",

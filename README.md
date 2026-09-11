@@ -18,7 +18,7 @@ by Joseph Adams. The original copyright notice is retained in [LICENSE](LICENSE)
 as required by the MIT license. Many thanks to the original author and sponsors.
 
 This fork is a public repository only — it is **not** distributed through the
-Bitfocus marketplace.
+Bitfocus module library.
 
 ## What changed in this fork
 
@@ -57,6 +57,13 @@ yarn build      # type-check + emit to dist/
 yarn lint       # type-aware lint
 yarn package    # build distributable
 ```
+
+### Packaged builds
+
+This module is not distributed anywhere else, so the packaged `.tgz` produced by
+`yarn package` is committed here and that is the only place to get it. Keep at
+most the **three** most recent versions in the repository root and delete older
+ones when a fourth is added.
 
 ## License
 

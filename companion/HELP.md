@@ -33,12 +33,12 @@ without closing cleanly (a pulled cable, a Wi-Fi drop, a switch power-cycle)
 produces no socket error at all and would otherwise leave the connection looking
 healthy indefinitely:
 
-| Condition | Action |
-|---|---|
+| Condition                       | Action                                   |
+| ------------------------------- | ---------------------------------------- |
 | No data for 1.5 s while polling | Send one request already in the poll set |
-| No data for 4 s while polling | Rebuild the connection |
-| Login not completed within 6 s | Rebuild the connection |
-| Host unreachable for 12 s | Recycle the connection attempt |
+| No data for 4 s while polling   | Rebuild the connection                   |
+| Login not completed within 6 s  | Rebuild the connection                   |
+| Host unreachable for 12 s       | Recycle the connection attempt           |
 
 The first two tiers only apply while polling is enabled. With polling off the
 switcher is expected to stay quiet, so silence is not treated as a fault.
@@ -59,7 +59,7 @@ cycles for `memoryname_N` to catch up.
 ## Notes and known limitations
 
 - **Tally variables** report `Program` for a source that is on both PGM and PVW.
-  The tally *feedbacks* handle this correctly — a source on both buses lights both
+  The tally _feedbacks_ handle this correctly — a source on both buses lights both
   the Program and the Preview button — but the variable reports the single value
   `Program`, matching the original module so that existing expressions comparing
   against `"Program"` keep working.

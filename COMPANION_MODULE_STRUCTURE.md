@@ -14,15 +14,15 @@ product-specific logic — and grounded in the upstream template
 There are two live generations of the module API, and any given repo is on one of
 them. Detect which before assuming a pattern:
 
-| Signal | **2.x (current template)** | **1.x (most existing modules)** |
-|---|---|---|
-| `@companion-module/base` | `2.x` | `1.x` |
-| `@companion-module/tools` | `3.x` | `2.x` |
-| Entry in `main.ts` | `export default class … extends InstanceBase<ModuleSchema>` + `export { UpgradeScripts }` | `runEntrypoint(Instance, UpgradeScripts)` |
-| Definition files | `Update*(self)` calling `self.setXDefinitions(...)`, plus exported `*Schema` types | `Get*(self)` **returning** a definitions object, passed to `self.setXDefinitions(...)` |
-| Typing | Typed schema (`ModuleSchema`, `ActionsSchema`, …); options typed on `event.options` | Untyped; options read as `event.options['id'] as T` |
-| Presets | `setPresetDefinitions(structure, presets)` with `CompanionPresetSection[]` | `setPresetDefinitions(presets)` — flat object keyed by preset id |
-| `tsconfig.build` base | `@companion-module/tools/tsconfig/node22/recommended-esm.json` | `.../node22/recommended` |
+| Signal                    | **2.x (current template)**                                                                | **1.x (most existing modules)**                                                        |
+| ------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `@companion-module/base`  | `2.x`                                                                                     | `1.x`                                                                                  |
+| `@companion-module/tools` | `3.x`                                                                                     | `2.x`                                                                                  |
+| Entry in `main.ts`        | `export default class … extends InstanceBase<ModuleSchema>` + `export { UpgradeScripts }` | `runEntrypoint(Instance, UpgradeScripts)`                                              |
+| Definition files          | `Update*(self)` calling `self.setXDefinitions(...)`, plus exported `*Schema` types        | `Get*(self)` **returning** a definitions object, passed to `self.setXDefinitions(...)` |
+| Typing                    | Typed schema (`ModuleSchema`, `ActionsSchema`, …); options typed on `event.options`       | Untyped; options read as `event.options['id'] as T`                                    |
+| Presets                   | `setPresetDefinitions(structure, presets)` with `CompanionPresetSection[]`                | `setPresetDefinitions(presets)` — flat object keyed by preset id                       |
+| `tsconfig.build` base     | `@companion-module/tools/tsconfig/node22/recommended-esm.json`                            | `.../node22/recommended`                                                               |
 
 Everything else in this document — file layout, toolchain, build/package flow, CI,
 manifest, and the gotchas — is **the same across both**. Where a building block
@@ -43,9 +43,9 @@ feedbacks, variables, presets) and whatever the target device/software speaks
 (TCP, HTTP/REST, WebSocket, OSC, serial, a vendor SDK, …).
 
 The `@companion-module/base` package provides `InstanceBase`, which the module
-subclasses. The base class gives you the methods you call *out* to Companion
+subclasses. The base class gives you the methods you call _out_ to Companion
 (`setActionDefinitions`, `setVariableValues`, `checkFeedbacks`, `updateStatus`,
-`log`, `saveConfig`, …) and the lifecycle hooks Companion calls *in*
+`log`, `saveConfig`, …) and the lifecycle hooks Companion calls _in_
 (`init`, `configUpdated`, `destroy`, `getConfigFields`).
 
 A module is **one connection type**. One instance = one configured connection to one
@@ -207,7 +207,7 @@ field and (de)serialize through helpers. Persist changes with `this.saveConfig(t
 
 For each block: what it is, then the skeleton. 2.x form shown as primary; 1.x noted.
 
-### 5.1 Actions (`actions.ts`) — things a button *does*
+### 5.1 Actions (`actions.ts`) — things a button _does_
 
 ```ts
 // 2.x
@@ -313,9 +313,11 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 ```ts
 export function UpdatePresets(self: ModuleInstance): void {
 	const structure: CompanionPresetSection[] = [
-		{ id: 'section1', name: 'Section One', definitions: [
-			{ id: 'group1', name: 'Group One', type: 'simple', presets: ['mylabel'] },
-		]},
+		{
+			id: 'section1',
+			name: 'Section One',
+			definitions: [{ id: 'group1', name: 'Group One', type: 'simple', presets: ['mylabel'] }],
+		},
 	]
 	const presets: CompanionPresetDefinitions<ModuleSchema> = {}
 	presets['mylabel'] = {
@@ -413,7 +415,7 @@ nodeLinker: node-modules
 enableScripts: false
 npmMinimalAgeGate: 3d
 npmPreapprovedPackages:
-  - "@companion-module/*"
+  - '@companion-module/*'
 ```
 
 **`package.json` scripts** (2.x template; `run` is Yarn's script runner —
@@ -497,8 +499,9 @@ are the highest-value content to bake into a project `CLAUDE.md`.
 
 **Build-green ≠ lint-green.** `tsc` does not run the type-aware ESLint rules. CI
 runs both, so these only surface in CI (or `yarn lint`):
+
 - `@typescript-eslint/await-thenable` — `await` on a non-Promise (e.g. `await
-  this.saveConfig(...)`; `saveConfig` is synchronous). Remove the `await`.
+this.saveConfig(...)`; `saveConfig` is synchronous). Remove the `await`.
 - `@typescript-eslint/no-misused-promises` — an async callback passed where a
   `void` return is expected, typically `setInterval(async () => {…})`. Wrap it:
   `setInterval(() => { void (async () => {…})() }, ms)`.
@@ -515,10 +518,12 @@ Most are auto-fixable: run `yarn lint --fix`, then hand-fix the residue
 so read them rather than blindly silencing).
 
 **ESLint flat-config ignores.** To exclude paths (e.g. archived versions), add a
-config object whose **only** key is `ignores` — that makes it a *global* ignore:
+config object whose **only** key is `ignores` — that makes it a _global_ ignore:
+
 ```js
-export default [ { ignores: ['old-versions/**'] }, ...baseConfig ]
+export default [{ ignores: ['old-versions/**'] }, ...baseConfig]
 ```
+
 If you spread the tools preset directly (`export default generateEslintConfig(...)`)
 you must wrap it in an array to add the ignore object. Also: a **missing final
 newline** on `eslint.config.mjs` itself trips `prettier/prettier` — the config file
@@ -536,14 +541,14 @@ name.
 **Preset variable refs use the module id**, not a connection label — Companion
 substitutes it. For live-label-dependent text, use `self.label` at generation time.
 
-**Advanced vs boolean feedback:** dynamic *text/colour* → advanced (return a style);
-on/off *style* → boolean. Always give advanced feedbacks a fallback so buttons never
+**Advanced vs boolean feedback:** dynamic _text/colour_ → advanced (return a style);
+on/off _style_ → boolean. Always give advanced feedbacks a fallback so buttons never
 render blank.
 
 **Poll model & state cache.** A common pattern is a periodic poll (e.g. full state
 at a slow interval, a hot value faster) storing the last response in a state object;
 feedbacks/variables read from that cache. Grid/positional lookups are safe against
-a slightly stale cache (positions are stable), but *selection/liveness* flags in the
+a slightly stale cache (positions are stable), but _selection/liveness_ flags in the
 cache can lag — read those from a live GET when correctness matters. Swallow poll
 errors quietly, but add logging when chasing intermittent/environment-specific bugs.
 
@@ -556,7 +561,7 @@ forward.
 **Spec ≠ runtime.** Vendor API specs/swagger and live device behaviour diverge
 (enum spellings, value units, fields that are read-only on write, response shapes).
 Confirm against the live device/console, not spec inference. Choice/enum parameters
-in particular may accept a *value string* but ignore an *index* on write, or vice
+in particular may accept a _value string_ but ignore an _index_ on write, or vice
 versa — verify which.
 
 ---
@@ -583,7 +588,7 @@ versa — verify which.
 
 ## 12. What is (and isn't) the value
 
-The module *structure* — file layout, lifecycle wiring, the definition blocks,
+The module _structure_ — file layout, lifecycle wiring, the definition blocks,
 toolchain, CI — is boilerplate and portable; this document captures it so it never
 has to be re-derived. The durable value of any given module is the **domain logic**:
 the state model, the control/queue/preset engine, the formatting and mapping between
