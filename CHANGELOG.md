@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.2 — Old project name removed from the packaged build
+
+No functional change, and no command byte moved.
+
+The pre-rename project name survived in four places in `companion/to-do.md` as
+deliberate history. Since `companion/` is packaged wholesale, those notes ship
+inside the module, so the name was still going out in the tarball. All four are
+now reworded — the facts are kept, the dead name is not — and it appears nowhere
+in the repository.
+
+This is a patch bump rather than a re-cut of 1.1.1 because 1.1.1 was already
+pushed to a public repository, and republishing a version number over different
+bytes is worse than spending a patch.
+
+Also recorded: the repository is public, and the per-project folder the old path
+left behind under `~/.claude/projects/` has been deleted.
+
 ## 1.1.1 — Documentation and formatting
 
 No functional change. No command byte changed — `src/` is untouched.

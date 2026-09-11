@@ -1,6 +1,6 @@
 {
 	"name": "roland-v160-pbe",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"main": "dist/main.js",
 	"type": "module",
 	"license": "MIT",

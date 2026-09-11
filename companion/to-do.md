@@ -24,8 +24,8 @@ Status as of 2026-09-11.
 - [x] **Code review rolled in** — see `CODE_REVIEW.md` and the 1.1.0 changelog.
       12 defects fixed, 3 parked as needing hardware, 1 deliberately unchanged.
       Proven byte-neutral on the wire: all 76 action callbacks emit identical bytes.
-- [x] **Idiot-check of the hand edits** — found and fixed: - `src/presets.ts` still hardcoded the **old** module id
-      (`roland-v160v1-pbs`) for preset variable references, so after the manifest
+- [x] **Idiot-check of the hand edits** — found and fixed: - `src/presets.ts` still hardcoded the **old**, pre-rename
+      module id for preset variable references, so after the manifest
       rename every memory-name and model/version button would have rendered the
       raw `$(...)` text instead of a value. It now derives from a single
       `MODULE_ID` constant tied by comment to the manifest. - manifest `name` was a copy of the `id` rather than a human-readable name - manifest `id` contained uppercase - `package.json` name and repo URLs still pointed at the old repo - `companion/HELP.md` title read "Purple Badger Solution Moderization"
@@ -35,7 +35,7 @@ Status as of 2026-09-11.
 
 - [x] **Version 1.1.0** confirmed (not 1.0.1) — the config schema changed and an
       upgrade script was added, so a patch bump would understate it.
-- [x] **Stale `roland-v160v1-pbs-1.0.0.tgz` deleted.**
+- [x] **Stale 1.0.0 `.tgz` built under the pre-rename module id deleted.**
 - [x] **Display name set** to `Roland v160 : Purple Badger Edition` with shortname
       `V160_PBE`. Note how Companion's module list actually renders: the **bold**
       line is `shortname` and the line beneath it is `manufacturer: products` —
@@ -50,8 +50,8 @@ Status as of 2026-09-11.
       `Jay-PBS/Roland-v160-PBE-Companion-Module`, full 67-commit history including
       the upstream lineage. This repo was created fresh on 2026-09-11 and is the
       first and only GitHub home for this project; nothing was migrated. The
-      `roland-v160v1-pbs` URL that was sitting in `.git/config` was a guess made
-      when the fork was scaffolded and never corresponded to a real repo.
+      pre-rename URL that was sitting in `.git/config` was a guess made when the
+      fork was scaffolded and never corresponded to a real repo.
 - [x] **CI green** (run on `27cfee7`: install, build and lint all pass).
       The failure was the package rename invalidating the root workspace entry in
       `yarn.lock` — Yarn turns on `--immutable` automatically when `CI` is set, so
@@ -74,23 +74,22 @@ Status as of 2026-09-11.
       Code keys its per-project memory off the folder path, and the memory
       (fork decisions, the id/MODULE_ID rule, the no-hardware constraint) was
       carried across to `~/.claude/projects/d--GITHUB-Roland-v160-PBE-Companion-Module/`.
-      The old slug still holds a copy plus that session's transcript and can be
-      deleted.
+      The old slug has since been deleted.
 - [x] **Stale identity swept** — `README.md`, `CODE_REVIEW.md` and `CLAUDE.md`
-      still carried the old "Roland v160v1 - PBS" name in their titles. Fixed. The
-      remaining mentions of the old name in this file are deliberate history.
+      carried the old pre-rename project name in their titles, and this file
+      still spelled it out in four places as history. All gone: the old name now
+      appears nowhere in the repository, and the dead per-project folder it left
+      behind under `~/.claude/projects/` has been deleted too.
 
 - [x] **Packaged builds are committed** — the module is not distributed
       anywhere else, so the `.tgz` from `yarn package` lives in the repo root.
       Retention is the three most recent versions; delete the oldest when a
       fourth is added.
 
+- [x] **Repo is public.**
+
 ## Open — needs your call
 
-- [ ] **Make the repo public** — Settings → General → Danger Zone → Change
-      visibility. Not scriptable from this machine: the `gh` CLI is not installed.
-      Worth doing only after you are happy with the live-development warning now
-      at the top of the README.
 - [ ] **This file ships inside the module.** `companion/` is packaged wholesale,
       so these internal dev notes end up in users' Companion installs alongside
       `HELP.md`. Move it to the repo root if that is not wanted — left where it is
