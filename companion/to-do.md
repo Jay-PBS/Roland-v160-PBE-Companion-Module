@@ -56,10 +56,10 @@ Status as of 2026-09-11.
 
 - [x] **Pushed to GitHub** — `main` is on
       `Jay-PBS/Roland-v160-PBE-Companion-Module`, full 67-commit history including
-      the upstream lineage. Note the destination turned out to be an *empty* repo
-      rather than a rename: the old `roland-v160v1-pbs` URL returns "Repository
-      not found" with no redirect, so anything that lived on it GitHub-side
-      (issues, stars) did not come across.
+      the upstream lineage. This repo was created fresh on 2026-09-11 and is the
+      first and only GitHub home for this project; nothing was migrated. The
+      `roland-v160v1-pbs` URL that was sitting in `.git/config` was a guess made
+      when the fork was scaffolded and never corresponded to a real repo.
 - [x] **CI fixed.** The first run failed because renaming the package invalidated
       the root workspace entry in `yarn.lock`, and Yarn turns on `--immutable`
       automatically when `CI` is set, so the install refused to update it.
