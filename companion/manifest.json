@@ -1,20 +1,20 @@
 {
 	"type": "connection",
-	"id": "roland-v160v1-pbs",
-	"name": "roland-v160v1-pbs",
-	"shortname": "v160v1-pbs",
-	"description": "Control a Roland V-160HD video switcher (PBS modernization fork)",
-	"version": "1.0.0",
+	"id": "roland-v160-pbe",
+	"name": "Roland v160 : Purple Badger Edition",
+	"shortname": "V160_PBE",
+	"description": "Control a Roland V-160HD video switcher (Purple Badger Solutions modernization fork)",
+	"version": "1.1.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/Jay-PBS/roland-v160v1-pbs.git",
-	"bugs": "https://github.com/Jay-PBS/roland-v160v1-pbs/issues",
+	"repository": "git+https://github.com/Jay-PBS/Roland-v160-PBE-Companion-Module.git",
+	"bugs": "https://github.com/Jay-PBS/Roland-v160-PBE-Companion-Module/issues",
 	"maintainers": [
 		{
 			"name": "Purple Badger Solutions",
 			"email": "projects@purplebadgersolutions.co.uk"
 		}
 	],
-	"legacyIds": ["roland-v160hd"],
+	"legacyIds": [],
 	"runtime": {
 		"type": "node22",
 		"api": "nodejs-ipc",

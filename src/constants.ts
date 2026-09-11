@@ -1,5 +1,28 @@
 import type { DropdownChoice } from '@companion-module/base'
 
+/**
+ * The manifest's module id. Preset variable references are written as
+ * `$(<module id>:<variable>)` and Companion swaps in the connection's label when
+ * it renders them, so this MUST stay equal to `id` in companion/manifest.json —
+ * if they drift, every preset renders the raw reference text instead of a value.
+ */
+export const MODULE_ID = 'roland-v160-pbe'
+
+/**
+ * Floor for the configurable poll rate. A cycle is ~31 requests, so 200ms is about
+ * 155 commands/second; the sibling V-80HD module measured panel lockup on this
+ * family of switchers at roughly 244/second, and the old 100ms floor allowed far
+ * more than that. Enforced in the config field and again at runtime.
+ */
+export const MIN_POLL_RATE_MS = 200
+
+/**
+ * How many poll cycles between memory-name refreshes. Names only change when
+ * someone renames a memory on the panel, so re-reading all 240 characters every
+ * cycle is wasted traffic - see requestPolledData.
+ */
+export const MEMORY_NAME_REFRESH_CYCLES = 60
+
 /** Format a number as a 2-digit uppercase hex string, e.g. 10 -> '0A'. */
 export function hex2(value: number): string {
 	return value.toString(16).padStart(2, '0').toUpperCase()

@@ -14,9 +14,9 @@ import {
 	CHOICES_AUX_LINK_MODES,
 	CHOICES_AUX_MUTE_ADDRESSES,
 	CHOICES_AUX_SOURCE_ADDRESSES,
-	CHOICES_CAMERAS,
 	CHOICES_CAMERA_PRESETS,
 	CHOICES_CAMERA_TALLY_INPUTS,
+	CHOICES_CAMERAS,
 	CHOICES_CHROMA_COLORS,
 	CHOICES_DSK,
 	CHOICES_DSK_HEX,
@@ -30,8 +30,8 @@ import {
 	CHOICES_OUTPUTS,
 	CHOICES_OUTPUTSASSIGN,
 	CHOICES_PGMPVW_SELECT,
-	CHOICES_PINPDSK,
 	CHOICES_PINP_KEYS,
+	CHOICES_PINPDSK,
 	CHOICES_PNPKEY_BORDER_COLORS,
 	CHOICES_PNPKEY_FADE,
 	CHOICES_PNPKEY_HEX,
@@ -41,6 +41,7 @@ import {
 	CHOICES_TRANSITION_TYPES,
 	CHOICES_WIPE_DIRECTIONS,
 	CHOICES_WIPE_TYPES,
+	MODULE_ID,
 	SWITCH_AUTO,
 	SWITCH_CUT,
 } from './constants.js'
@@ -49,31 +50,51 @@ import {
  * Preset variable references use the module id; Companion substitutes the
  * user's actual connection label at render time.
  */
-const VAR = 'roland-v160v1-pbs'
+// Must match the manifest id; see MODULE_ID.
+const VAR = MODULE_ID
 
 const WHITE = combineRgb(255, 255, 255)
+const BLACK = combineRgb(0, 0, 0)
 
 /** Role-based colour palette — change a role here and every preset follows. */
+/**
+ * Colour scheme carried across from the sibling V-80HD module so a mixed rig
+ * reads as one system. Deep = inactive button background, bright = active
+ * feedback override.
+ *
+ * The deeps are the brights scaled down in RGB, so hue is preserved exactly and
+ * an inactive button still reads as "the red one". Each pair sits at roughly 4:1
+ * background contrast measured by WCAG relative luminance.
+ *
+ * Active states carry BLACK text, not white: white fails contrast against every
+ * bright colour here, so a lit button with white text is harder to read rather
+ * than easier.
+ *
+ * Magenta (camera) and the memory amber are the two pairs not in the V-80HD set,
+ * which has no camera control; they are derived the same way so they sit inside
+ * the same system.
+ */
 const PALETTE = {
-	program: combineRgb(96, 12, 12),
-	programActive: combineRgb(255, 0, 0),
-	preview: combineRgb(12, 84, 12),
-	previewActive: combineRgb(0, 200, 0),
-	transition: combineRgb(140, 90, 0),
-	layer: combineRgb(75, 0, 130),
-	layerActive: combineRgb(190, 0, 255),
-	aux: combineRgb(0, 64, 128),
-	auxActive: combineRgb(0, 150, 255),
-	routing: combineRgb(0, 96, 96),
-	routingActive: combineRgb(0, 190, 190),
-	memory: combineRgb(90, 0, 90),
-	memoryActive: combineRgb(210, 0, 210),
-	freeze: combineRgb(96, 96, 0),
-	freezeActive: combineRgb(220, 220, 0),
-	camera: combineRgb(47, 79, 79),
-	cameraActive: combineRgb(0, 160, 160),
-	panel: combineRgb(48, 48, 48),
-	system: combineRgb(24, 24, 24),
+	program: combineRgb(0x4e, 0x0c, 0x0c), // Red Deep      #4E0C0C
+	programActive: combineRgb(0xef, 0x44, 0x44), // Red Bright    #EF4444
+	preview: combineRgb(0x0e, 0x53, 0x28), // Green Deep    #0E5328
+	previewActive: combineRgb(0x22, 0xc5, 0x5e), // Green Bright  #22C55E
+	transition: combineRgb(0x32, 0x0e, 0x52), // Purple Deep   #320E52
+	transitionActive: combineRgb(0xa8, 0x55, 0xf7), // Purple Bright #A855F7
+	layer: combineRgb(0x69, 0x23, 0x06), // Orange Deep   #692306
+	layerActive: combineRgb(0xf9, 0x73, 0x16), // Orange Bright #F97316
+	aux: combineRgb(0x0d, 0x22, 0x5f), // Blue Deep     #0D225F
+	auxActive: combineRgb(0x3b, 0x82, 0xf6), // Blue Bright   #3B82F6
+	routing: combineRgb(0x0a, 0x4c, 0x46), // Teal Deep     #0A4C46
+	routingActive: combineRgb(0x06, 0xb6, 0xd4), // Cyan Bright   #06B6D4
+	memory: combineRgb(0x77, 0x51, 0x02), // Amber Deep    #775102
+	memoryActive: combineRgb(0xfa, 0xcc, 0x15), // Amber Bright  #FACC15
+	freeze: combineRgb(0x0d, 0x22, 0x5f), // Blue Deep - global freeze, as on the V-80HD
+	freezeActive: combineRgb(0x3b, 0x82, 0xf6), // Blue Bright
+	camera: combineRgb(0x4a, 0x10, 0x30), // Magenta Deep  #4A1030
+	cameraActive: combineRgb(0xec, 0x48, 0x99), // Magenta Bright #EC4899
+	panel: combineRgb(0x40, 0x40, 0x40), // Utility grey, as on the V-80HD
+	system: combineRgb(0x26, 0x26, 0x26),
 }
 
 type Group = CompanionPresetGroupSimple<ModuleSchema>
@@ -132,7 +153,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 						{
 							feedbackId: 'tally',
 							options: { input: tallyId, state: 'program' },
-							style: { bgcolor: PALETTE.programActive, color: WHITE },
+							style: { bgcolor: PALETTE.programActive, color: BLACK },
 						},
 					]
 				: []
@@ -160,7 +181,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 						{
 							feedbackId: 'tally',
 							options: { input: tallyId, state: 'preview' },
-							style: { bgcolor: PALETTE.previewActive, color: WHITE },
+							style: { bgcolor: PALETTE.previewActive, color: BLACK },
 						},
 					]
 				: []
@@ -264,7 +285,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 						{
 							feedbackId: 'keyOnAir',
 							options: { pinp: keyId, bus, onoff: '01' },
-							style: { bgcolor: busColorActive, color: WHITE },
+							style: { bgcolor: busColorActive, color: BLACK },
 						},
 					],
 				)
@@ -341,7 +362,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					{
 						feedbackId: 'pnpKeySource',
 						options: { pinp: `pnpkey${keyNumber}`, source: sourceId },
-						style: { bgcolor: PALETTE.layerActive, color: WHITE },
+						style: { bgcolor: PALETTE.layerActive, color: BLACK },
 					},
 				],
 			)
@@ -633,7 +654,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					{
 						feedbackId: 'auxTally',
 						options: { aux: auxKey, assign: sourceId },
-						style: { bgcolor: PALETTE.auxActive, color: WHITE },
+						style: { bgcolor: PALETTE.auxActive, color: BLACK },
 					},
 				],
 			)
@@ -656,7 +677,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					{
 						feedbackId: 'auxMute',
 						options: { aux: auxKey, mute: '01' },
-						style: { bgcolor: PALETTE.programActive, color: WHITE },
+						style: { bgcolor: PALETTE.programActive, color: BLACK },
 					},
 				],
 			)
@@ -679,7 +700,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					{
 						feedbackId: 'auxLink',
 						options: { aux: auxKey, link: '01' },
-						style: { bgcolor: PALETTE.auxActive, color: WHITE },
+						style: { bgcolor: PALETTE.auxActive, color: BLACK },
 					},
 				],
 			)
@@ -700,7 +721,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				{
 					feedbackId: 'auxLinkMode',
 					options: { mode: modeId },
-					style: { bgcolor: PALETTE.auxActive, color: WHITE },
+					style: { bgcolor: PALETTE.auxActive, color: BLACK },
 				},
 			],
 		)
@@ -725,7 +746,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					{
 						feedbackId: 'outputAssign',
 						options: { output: outputAddress, assign: assignId },
-						style: { bgcolor: PALETTE.routingActive, color: WHITE },
+						style: { bgcolor: PALETTE.routingActive, color: BLACK },
 					},
 				],
 			)
@@ -772,7 +793,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				{
 					feedbackId: 'lastMemory',
 					options: { memory: memoryId },
-					style: { bgcolor: PALETTE.memoryActive, color: WHITE },
+					style: { bgcolor: PALETTE.memoryActive, color: BLACK },
 				},
 			],
 		)
@@ -805,7 +826,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			{
 				feedbackId: 'freeze',
 				options: {},
-				style: { bgcolor: PALETTE.freezeActive, color: combineRgb(0, 0, 0) },
+				style: { bgcolor: PALETTE.freezeActive, color: BLACK },
 			},
 		],
 	)
@@ -820,7 +841,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			{
 				feedbackId: 'freeze',
 				options: {},
-				style: { bgcolor: PALETTE.freezeActive, color: combineRgb(0, 0, 0) },
+				style: { bgcolor: PALETTE.freezeActive, color: BLACK },
 			},
 		],
 	)
@@ -873,7 +894,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				{
 					feedbackId: 'selectedCamera',
 					options: { camera: cameraId },
-					style: { bgcolor: PALETTE.cameraActive, color: WHITE },
+					style: { bgcolor: PALETTE.cameraActive, color: BLACK },
 				},
 			],
 		)

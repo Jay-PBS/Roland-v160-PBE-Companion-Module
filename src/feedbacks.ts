@@ -77,12 +77,21 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				},
 			],
 			callback: (feedback) => {
+				// Status 3 is 'on PGM and PVW at once', so it has to satisfy the
+				// Program and Preview selections as well as Both. The original module
+				// matched it only against Both, which left a Program tally button dark
+				// precisely when its input was on programme.
 				const status = self.state.tally.get(feedback.options.input) ?? 0
-				return (
-					(status === 1 && feedback.options.state === 'program') ||
-					(status === 2 && feedback.options.state === 'preview') ||
-					(status === 3 && feedback.options.state === 'both')
-				)
+				switch (feedback.options.state) {
+					case 'program':
+						return status === 1 || status === 3
+					case 'preview':
+						return status === 2 || status === 3
+					case 'both':
+						return status === 3
+					default:
+						return false
+				}
 			},
 		},
 

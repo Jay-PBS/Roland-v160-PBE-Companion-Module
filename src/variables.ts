@@ -58,8 +58,14 @@ function onOff(value: string | undefined): string {
 	return value === '01' ? 'On' : 'Off'
 }
 
-function lookupLabel(choices: { id: string | number; label: string }[], value: string | undefined): string | undefined {
-	if (value === undefined) return undefined
+/**
+ * Resolve a device value to its human label. Returns 'Unknown' rather than
+ * undefined before the first poll reply arrives: an undefined variable renders as
+ * an empty string, which on a button is indistinguishable from a broken reference.
+ * An unrecognised value falls back to the raw value so it is at least diagnosable.
+ */
+function lookupLabel(choices: { id: string | number; label: string }[], value: string | undefined): string {
+	if (value === undefined) return 'Unknown'
 	const found = choices.find((c) => c.id === value)
 	return found ? found.label : value
 }
@@ -81,7 +87,7 @@ export function updateVariableValues(self: ModuleInstance): void {
 	for (let key = 1; key <= 4; key++) {
 		values[`pnpkey${key}_pgm`] = onOff(state.values.get(`${keyAddresses[key - 1]}00`))
 		values[`pnpkey${key}_pvw`] = onOff(state.values.get(`${keyAddresses[key - 1]}01`))
-		values[`pnpkey${key}_source`] = state.pnpkeySourceName.get(key)
+		values[`pnpkey${key}_source`] = state.pnpkeySourceName.get(key) ?? 'Unknown'
 	}
 
 	values.hdmi1 = lookupLabel(CHOICES_OUTPUTSASSIGN, state.hdmi1assign)
@@ -111,7 +117,9 @@ export function updateVariableValues(self: ModuleInstance): void {
 		values[`memoryname_${i + 1}`] = decodeMemoryName(state.memoryNameChars[i])
 	}
 	if (state.lastMemory !== undefined) {
-		values.lastmemorynumber = state.lastMemory
+		// The switcher reports a zero-based index, but every memory is labelled
+		// 1-30 in the UI and in the memoryname_N variables, so present it that way.
+		values.lastmemorynumber = state.lastMemory + 1
 		values.lastmemoryname = decodeMemoryName(state.memoryNameChars[state.lastMemory] ?? [])
 	}
 

@@ -1,11 +1,25 @@
 import { Regex, type SomeCompanionConfigField } from '@companion-module/base'
+import { MIN_POLL_RATE_MS } from './constants.js'
 
 export type ModuleConfig = {
 	host: string
-	password: string
+	/**
+	 * Legacy plaintext password. Retained only so the upgrade script can migrate
+	 * existing connections into the secrets store, and so a connection whose
+	 * upgrade has not run yet still authenticates. New connections leave it unset.
+	 */
+	password?: string
 	polling: boolean
 	pollingrate: number
 	verbose: boolean
+}
+
+/**
+ * Values held in Companion's secrets store rather than the config store. Only the
+ * keys are reported to the web UI, so the passcode is never round-tripped back.
+ */
+export type ModuleSecrets = {
+	password: string
 }
 
 export function GetConfigFields(): SomeCompanionConfigField[] {
@@ -28,7 +42,7 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			regex: Regex.IP,
 		},
 		{
-			type: 'textinput',
+			type: 'secret-text',
 			id: 'password',
 			label: 'Password',
 			width: 6,
@@ -57,7 +71,7 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			id: 'pollingrate',
 			label: 'Polling Rate (in ms)',
 			default: 1000,
-			min: 100,
+			min: MIN_POLL_RATE_MS,
 			max: 60000,
 			width: 3,
 			isVisibleExpression: '!!$(options:polling)',

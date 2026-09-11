@@ -1,12 +1,11 @@
 import {
-	EmptyUpgradeScript,
 	type CompanionMigrationOptionValues,
 	type CompanionStaticUpgradeProps,
 	type CompanionStaticUpgradeResult,
 	type CompanionStaticUpgradeScript,
 	type CompanionUpgradeContext,
 } from '@companion-module/base'
-import type { ModuleConfig } from './config.js'
+import type { ModuleConfig, ModuleSecrets } from './config.js'
 
 /**
  * Replace a plain (non-expression) option value if it matches. Returns true if changed.
@@ -25,19 +24,30 @@ function replaceOptionValue(
 	return false
 }
 
-export const UpgradeScripts: CompanionStaticUpgradeScript<ModuleConfig>[] = [
+/**
+ * A no-op holding a position in the chain. The library's own EmptyUpgradeScript is
+ * typed with `undefined` secrets and so cannot sit in a list that carries a secrets
+ * type, but the position still has to be occupied or every later script shifts.
+ */
+const NoopUpgradeScript: CompanionStaticUpgradeScript<ModuleConfig, ModuleSecrets> = () => ({
+	updatedConfig: null,
+	updatedActions: [],
+	updatedFeedbacks: [],
+})
+
+export const UpgradeScripts: CompanionStaticUpgradeScript<ModuleConfig, ModuleSecrets>[] = [
 	// v2.x of the original module shipped a single empty upgrade script;
 	// this placeholder keeps the chain position stable. Append-only below.
-	EmptyUpgradeScript,
+	NoopUpgradeScript,
 
 	// v1.0.0 of this fork: config pollingrate became a number field, and
 	// several broken stored option defaults from the original module are
 	// migrated to valid choice values.
 	(
 		_context: CompanionUpgradeContext<ModuleConfig>,
-		props: CompanionStaticUpgradeProps<ModuleConfig, undefined>,
-	): CompanionStaticUpgradeResult<ModuleConfig, undefined> => {
-		const result: CompanionStaticUpgradeResult<ModuleConfig, undefined> = {
+		props: CompanionStaticUpgradeProps<ModuleConfig, ModuleSecrets>,
+	): CompanionStaticUpgradeResult<ModuleConfig, ModuleSecrets> => {
+		const result: CompanionStaticUpgradeResult<ModuleConfig, ModuleSecrets> = {
 			updatedConfig: null,
 			updatedActions: [],
 			updatedFeedbacks: [],
@@ -80,6 +90,29 @@ export const UpgradeScripts: CompanionStaticUpgradeScript<ModuleConfig>[] = [
 				changed = replaceOptionValue(feedback.options, 'aux', '11', 'aux1') || changed
 			}
 			if (changed) result.updatedFeedbacks.push(feedback)
+		}
+
+		return result
+	},
+	// v1.1.0 of this fork: the passcode moved out of the plaintext config store and
+	// into Companion's secrets store. Copy it across, and blank the legacy key so
+	// the password stops being round-tripped to the web UI.
+	(
+		_context: CompanionUpgradeContext<ModuleConfig>,
+		props: CompanionStaticUpgradeProps<ModuleConfig, ModuleSecrets>,
+	): CompanionStaticUpgradeResult<ModuleConfig, ModuleSecrets> => {
+		const result: CompanionStaticUpgradeResult<ModuleConfig, ModuleSecrets> = {
+			updatedConfig: null,
+			updatedActions: [],
+			updatedFeedbacks: [],
+		}
+
+		const legacy = props.config?.password
+		const alreadyMigrated = (props.secrets?.password ?? '') !== ''
+
+		if (props.config && typeof legacy === 'string' && legacy !== '' && !alreadyMigrated) {
+			result.updatedSecrets = { ...(props.secrets ?? { password: '' }), password: legacy }
+			result.updatedConfig = { ...props.config, password: '' }
 		}
 
 		return result
