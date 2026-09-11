@@ -41,21 +41,30 @@ Status as of 2026-09-11.
 - [x] **Built** — `roland-v160-pbe-1.1.0.tgz`. `build`, `lint`, `prettier` and
       `package` all clean.
 
+- [x] **Version 1.1.0** confirmed (not 1.0.1) — the config schema changed and an
+      upgrade script was added, so a patch bump would understate it.
+- [x] **Stale `roland-v160v1-pbs-1.0.0.tgz` deleted.**
+- [x] **Display name set** to `Roland v160 : Purple Badger Edition` with shortname
+      `V160_PBE`. Note how Companion's module list actually renders: the **bold**
+      line is `shortname` and the line beneath it is `manufacturer: products` —
+      confirmed against the v80hd row (`Roland: V-80HD`) and the Pixera row
+      (`Purple Badger Solutions: Pixera`). `name` is not shown in that list.
+      `manufacturer` is left as `Roland` and `products` as `["V-160HD"]`, so the
+      list line reads `Roland: V-160HD` and the module stays findable by
+      manufacturer. If you want that line to read differently, it is those two
+      fields to change, not `name`.
+
 ## Open — needs your call
 
-- [ ] **Version number.** The list said bump to 1.0.1; this is tagged **1.1.0**
-      instead, because the config schema changed (passcode moved to the secrets
-      store) and an append-only upgrade script was added — a patch bump would
-      understate that. Say the word and it goes to 1.0.1.
-- [ ] **Push to GitHub and make public.** Not done — pushing and changing
-      visibility are outward-facing and irreversible in effect, so they need an
-      explicit go-ahead. Note the working tree is still on `main`.
-- [ ] **Stale artefact:** `roland-v160v1-pbs-1.0.0.tgz` is still in the repo root
-      under the old name. Delete it, or keep it as a record?
-- [ ] **`manufacturer` is `"Roland"`** in the manifest, where the Pixera module
-      uses `"Purple Badger Solutions"`. Left as Roland since that is the device's
-      actual maker and is how users browse by manufacturer — change if you want
-      strict consistency with the other modules.
+- [ ] **Push to GitHub.** Both commits are on `main` locally. Waiting on the repo
+      rename: `Jay-PBS/roland-v160v1-pbs` → `Jay-PBS/Roland-v160-PBE-Companion-Module`
+      (Settings → rename; keeps history, issues and stars, and redirects the old
+      URL). The manifest, `package.json` and bugs URLs already point at the new
+      name. Once renamed, the remote gets repointed and `main` pushed.
+- [ ] **Make the repo public** — Settings → General → Danger Zone → Change
+      visibility. Not scriptable from this machine: the `gh` CLI is not installed.
+      Worth doing only after you are happy with the live-development warning now
+      at the top of the README.
 
 ## Next session with hardware
 
