@@ -60,18 +60,34 @@ Status as of 2026-09-11.
       first and only GitHub home for this project; nothing was migrated. The
       `roland-v160v1-pbs` URL that was sitting in `.git/config` was a guess made
       when the fork was scaffolded and never corresponded to a real repo.
-- [x] **CI fixed.** The first run failed because renaming the package invalidated
-      the root workspace entry in `yarn.lock`, and Yarn turns on `--immutable`
-      automatically when `CI` is set, so the install refused to update it.
-      Lockfile regenerated; `--immutable` is now written out explicitly in the
-      workflow so the same drift fails with an obvious message instead of a bare
-      exit 1. `actions/checkout` and `actions/setup-node` bumped to v5 to clear
-      the Node 20 deprecation warning.
+- [x] **CI green** (run on `27cfee7`: install, build and lint all pass).
+      The failure was the package rename invalidating the root workspace entry in
+      `yarn.lock` — Yarn turns on `--immutable` automatically when `CI` is set, so
+      the install refused to update it and exited 1 with no useful message.
+      Lockfile regenerated, and `--immutable` is now written out explicitly in the
+      workflow so the same drift fails with an obvious message next time.
+
+      Worth remembering: the first attempt at this fix also bumped
+      `actions/checkout` and `actions/setup-node` to v5 and added a
+      permissions/concurrency block, none of which was needed. The run then failed
+      at `setup-node@v5` instead — one failure swapped for another, with the
+      original signal lost. Reverted to v4 and kept only the one-line fix. The
+      Node 20 notice is a warning, not an error, and GitHub already force-runs
+      those actions on Node 24.
 - [x] **Stale identity swept** — `README.md`, `CODE_REVIEW.md` and `CLAUDE.md`
       still carried the old "Roland v160v1 - PBS" name in their titles. Fixed. The
       remaining mentions of the old name in this file are deliberate history.
 
 ## Open — needs your call
+
+- [ ] **Renaming the Windows folder.** The repo itself is path-independent —
+      nothing tracked refers to `D:\GITHUB\Roland v160v1 - PBS`, so git, the
+      build and CI are all unaffected. One side effect to know about: Claude
+      Code keys its per-project memory off the folder path, so
+      `~/.claude/projects/d--GITHUB-Roland-v160v1---PBS/` would no longer be
+      found and the project memory (fork decisions, the id/MODULE_ID rule, the
+      no-hardware constraint) would silently stop loading. Copy that folder to
+      the slug for the new path to keep it.
 
 - [ ] **Make the repo public** — Settings → General → Danger Zone → Change
       visibility. Not scriptable from this machine: the `gh` CLI is not installed.
