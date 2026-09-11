@@ -54,17 +54,33 @@ Status as of 2026-09-11.
       manufacturer. If you want that line to read differently, it is those two
       fields to change, not `name`.
 
+- [x] **Pushed to GitHub** — `main` is on
+      `Jay-PBS/Roland-v160-PBE-Companion-Module`, full 67-commit history including
+      the upstream lineage. Note the destination turned out to be an *empty* repo
+      rather than a rename: the old `roland-v160v1-pbs` URL returns "Repository
+      not found" with no redirect, so anything that lived on it GitHub-side
+      (issues, stars) did not come across.
+- [x] **CI fixed.** The first run failed because renaming the package invalidated
+      the root workspace entry in `yarn.lock`, and Yarn turns on `--immutable`
+      automatically when `CI` is set, so the install refused to update it.
+      Lockfile regenerated; `--immutable` is now written out explicitly in the
+      workflow so the same drift fails with an obvious message instead of a bare
+      exit 1. `actions/checkout` and `actions/setup-node` bumped to v5 to clear
+      the Node 20 deprecation warning.
+- [x] **Stale identity swept** — `README.md`, `CODE_REVIEW.md` and `CLAUDE.md`
+      still carried the old "Roland v160v1 - PBS" name in their titles. Fixed. The
+      remaining mentions of the old name in this file are deliberate history.
+
 ## Open — needs your call
 
-- [ ] **Push to GitHub.** Both commits are on `main` locally. Waiting on the repo
-      rename: `Jay-PBS/roland-v160v1-pbs` → `Jay-PBS/Roland-v160-PBE-Companion-Module`
-      (Settings → rename; keeps history, issues and stars, and redirects the old
-      URL). The manifest, `package.json` and bugs URLs already point at the new
-      name. Once renamed, the remote gets repointed and `main` pushed.
 - [ ] **Make the repo public** — Settings → General → Danger Zone → Change
       visibility. Not scriptable from this machine: the `gh` CLI is not installed.
       Worth doing only after you are happy with the live-development warning now
       at the top of the README.
+- [ ] **This file ships inside the module.** `companion/` is packaged wholesale,
+      so these internal dev notes end up in users' Companion installs alongside
+      `HELP.md`. Move it to the repo root if that is not wanted — left where it is
+      for now because that is where you have been looking for it.
 
 ## Next session with hardware
 

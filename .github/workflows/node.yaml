@@ -4,18 +4,29 @@ on:
   push:
   pull_request:
 
+# A new push supersedes an in-flight run of the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Enable corepack
         run: corepack enable
+      # --immutable is what CI does implicitly anyway (Yarn turns it on when CI
+      # is set); stating it means a lockfile that has drifted from package.json
+      # fails here with an obvious message rather than a bare exit 1.
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
       - name: Build
         run: yarn build
       - name: Lint

@@ -1,4 +1,4 @@
-# Roland v160v1 - PBS
+# Roland v160 : Purple Badger Edition
 
 A Bitfocus Companion module for the **Roland V-160HD** HD video switcher.
 

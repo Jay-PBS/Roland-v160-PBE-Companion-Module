@@ -1,4 +1,4 @@
-# CLAUDE.md — Roland v160v1 - PBS
+# CLAUDE.md — Roland v160 : Purple Badger Edition
 
 Guidance for any Claude/Fable session in this repository. This is a **modernization
 fork** of an existing, third-party, **MIT-licensed** Bitfocus Companion module for
@@ -46,8 +46,14 @@ This is a derivative of MIT-licensed work:
 
 ## Project identity
 
-- Display name: **Roland v160v1 - PBS**
-- Manifest `id`: lowercase-hyphenated, no spaces — e.g. **`roland-v160v1-pbs`**.
+- Display name (manifest `name`): **Roland v160 : Purple Badger Edition**
+- Manifest `id`: **`roland-v160-pbe`** — lowercase-hyphenated, no spaces. It must stay
+  equal to `MODULE_ID` in `src/constants.ts`, which preset variable references are
+  built from; if they drift, every preset renders raw `$(...)` text.
+- Manifest `shortname`: **`V160_PBE`**. Companion's module list shows `shortname` in
+  bold with `manufacturer: products` beneath it — `name` is not shown there.
+- `legacyIds` must stay **empty**. It once held `roland-v160hd`, which made Companion
+  present this as a version of the official module rather than a separate one.
 - Device: **Roland V-160HD** HD video switcher.
 - **Transport: identify it from the existing code and preserve it** (V-160HD control
   is LAN-based; confirm the exact scheme — TCP/socket vs HTTP — from the current

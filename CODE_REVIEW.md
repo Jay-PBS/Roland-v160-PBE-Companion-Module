@@ -1,4 +1,4 @@
-# Code review — Roland v160v1 - PBS
+# Code review — Roland v160 : Purple Badger Edition
 
 Review of the 1.0.0 TypeScript conversion, carried out 2026-09-11 with no V-160HD
 available. Findings are kept here with their evidence and outcome rather than

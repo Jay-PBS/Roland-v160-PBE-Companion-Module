@@ -1391,9 +1391,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"roland-v160v1-pbs@workspace:.":
+"roland-v160-pbe@workspace:.":
   version: 0.0.0-use.local
-  resolution: "roland-v160v1-pbs@workspace:."
+  resolution: "roland-v160-pbe@workspace:."
   dependencies:
     "@companion-module/base": "npm:^2.0.0"
     "@companion-module/tools": "npm:^3.0.0"
