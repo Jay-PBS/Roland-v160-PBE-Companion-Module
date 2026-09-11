@@ -1,4 +1,4 @@
-# Roland V-160HD (PBS fork)
+# Roland V160 Purple Badger (modernization fork)
 
 This module controls a Roland V-160HD video switcher over the LAN.
 
@@ -17,6 +17,61 @@ Adams.
   output and memory feedbacks and variables to work. Polling sends requests to
   the device at the configured interval.
 - Optionally enable **verbose logging** to see all data sent/received in the log.
+
+## Connection and recovery
+
+The switcher prompts for a passcode as soon as the socket opens, and the module
+answers that prompt **once**. If the passcode is wrong the switcher prompts again;
+the module reports `Password rejected` and stops rather than answering, because
+the switcher locks logins out after repeated attempts and then refuses even a
+correct passcode. If you see `Switcher is refusing logins`, that lockout has
+already happened — wait before retrying. Correct the passcode in the connection
+config and save, and the module will try again immediately.
+
+A watchdog runs once a second while connected, because a network path that dies
+without closing cleanly (a pulled cable, a Wi-Fi drop, a switch power-cycle)
+produces no socket error at all and would otherwise leave the connection looking
+healthy indefinitely:
+
+| Condition | Action |
+|---|---|
+| No data for 1.5 s while polling | Send one request already in the poll set |
+| No data for 4 s while polling | Rebuild the connection |
+| Login not completed within 6 s | Rebuild the connection |
+| Host unreachable for 12 s | Recycle the connection attempt |
+
+The first two tiers only apply while polling is enabled. With polling off the
+switcher is expected to stay quiet, so silence is not treated as a fault.
+
+## Polling
+
+Polling is required for feedbacks and variables. A cycle is about 31 requests.
+The minimum rate is 200 ms; going faster risks making the switcher's own panel
+unresponsive, which is why the floor exists and is enforced even if a stored
+configuration holds a lower value.
+
+Memory names are read once when the connection authenticates and then refreshed
+every 60th poll cycle, rather than on every cycle — they only change when someone
+renames a memory on the panel, and re-reading all 240 characters each cycle was
+the bulk of the traffic. If you rename a memory on the switcher, allow up to 60
+cycles for `memoryname_N` to catch up.
+
+## Notes and known limitations
+
+- **Tally variables** report `Program` for a source that is on both PGM and PVW.
+  The tally *feedbacks* handle this correctly — a source on both buses lights both
+  the Program and the Preview button — but the variable reports the single value
+  `Program`, matching the original module so that existing expressions comparing
+  against `"Program"` keep working.
+- **USB output assign** is known to write to a different address than the one the
+  module polls for that state, in both this module and the original it was forked
+  from. The feedback reads either, so it works; the action has been left exactly
+  as the original sent it. Treat USB output assign as unverified.
+- **Tally covers 42 channels** (HDMI 1-8, SDI 1-8, Still 1-16, XPT 1-10), as in
+  the original module. If your unit reports more, the extra channels are received
+  but have no variable or feedback yet.
+- The passcode is stored in Companion's secrets store, not in the connection
+  config. Existing connections are migrated automatically on upgrade.
 
 ## Actions
 
